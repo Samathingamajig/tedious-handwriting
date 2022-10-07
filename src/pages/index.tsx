@@ -3,10 +3,21 @@ import { useState } from "react";
 
 const Home: NextPage = () => {
   const [text, setText] = useState("");
-  const words = text.split(/\s+/).filter((word) => word.length > 0);
-  const [displayWords, setDisplayWords] = useState(2);
-  const [padWords, setPadWords] = useState(2);
+  const [displayWordsNum, setDisplayWordsNum] = useState(2);
+  const [padWordsNum, setPadWordsNum] = useState(2);
   const [position, setPosition] = useState(0);
+
+  const words = text.split(/\s+/).filter((word) => word.length > 0);
+
+  const firstPaddedWords = words
+    .slice(Math.max(0, position - padWordsNum), position)
+    .join(" ");
+  const displayedWords = words
+    .slice(position, position + displayWordsNum)
+    .join(" ");
+  const secondPaddedWords = words
+    .slice(position + displayWordsNum, position + displayWordsNum + padWordsNum)
+    .join(" ");
 
   return (
     <>
@@ -14,42 +25,29 @@ const Home: NextPage = () => {
       <textarea
         cols={30}
         rows={10}
-        className="rounded border-[1px] border-solid border-gray-500"
+        className="rounded border border-solid border-gray-500"
         value={text}
         onChange={(e) => setText(e.target.value)}
       ></textarea>
       <p className="">
-        {position > 0 && (
+        {firstPaddedWords && (
           <>
-            <span>
-              {words
-                .slice(Math.max(0, position - padWords), position)
-                .join(" ")}
-            </span>{" "}
+            <span>{firstPaddedWords}</span>{" "}
           </>
         )}
-        <span className="bg-yellow-200">
-          {words.slice(position, position + displayWords).join(" ")}
-        </span>
-        {position + displayWords < words.length && (
+        <span className="bg-yellow-200">{displayedWords}</span>
+        {secondPaddedWords && (
           <>
             {" "}
-            <span>
-              {words
-                .slice(
-                  position + displayWords,
-                  position + displayWords + padWords
-                )
-                .join(" ")}
-            </span>
+            <span>{secondPaddedWords}</span>
           </>
         )}
       </p>
       <button
         onClick={() =>
           setPosition((p) => {
-            const next = Math.min(p + displayWords, words.length - 1);
-            if (next < p + displayWords) return p;
+            const next = Math.min(p + displayWordsNum, words.length - 1);
+            if (next < p + displayWordsNum) return p;
             return next;
           })
         }
@@ -58,7 +56,7 @@ const Home: NextPage = () => {
         Increase position ({position})
       </button>
       <button
-        onClick={() => setPosition((p) => Math.max(0, p - displayWords))}
+        onClick={() => setPosition((p) => Math.max(0, p - displayWordsNum))}
         className="rounded bg-red-500 py-2 px-4 font-bold text-white hover:bg-red-700"
       >
         Decrease position ({position})
@@ -67,20 +65,20 @@ const Home: NextPage = () => {
         <label>Display words</label>
         <input
           type="number"
-          value={displayWords}
+          value={displayWordsNum}
           min={1}
           max={5}
           className="w-12 rounded border-[1px] border-solid border-gray-500 text-right"
-          onChange={(e) => setDisplayWords(parseInt(e.target.value))}
+          onChange={(e) => setDisplayWordsNum(parseInt(e.target.value))}
         />
         <label>Pad words</label>
         <input
           type="number"
-          value={padWords}
+          value={padWordsNum}
           min={0}
           max={5}
           className="w-12 rounded border-[1px] border-solid border-gray-500 text-right"
-          onChange={(e) => setPadWords(parseInt(e.target.value))}
+          onChange={(e) => setPadWordsNum(parseInt(e.target.value))}
         />
       </div>
     </>
