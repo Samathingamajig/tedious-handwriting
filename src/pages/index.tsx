@@ -1,11 +1,13 @@
 import type { NextPage } from "next";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 const Home: NextPage = () => {
   const [text, setText] = useState("");
   const [displayWordsNum, setDisplayWordsNum] = useState(2);
   const [padWordsNum, setPadWordsNum] = useState(2);
   const [position, setPosition] = useState(0);
+  const displayWordsId = useId();
+  const padWordsId = useId();
 
   const words = text.split(/\s+/).filter((word) => word.length > 0);
 
@@ -62,22 +64,24 @@ const Home: NextPage = () => {
         Decrease position ({position})
       </button>
       <div>
-        <label>Display words</label>
+        <label htmlFor={displayWordsId}>Display words</label>
         <input
           type="number"
           value={displayWordsNum}
           min={1}
           max={5}
-          className="w-12 rounded border-[1px] border-solid border-gray-500 text-right"
+          id={displayWordsId}
+          className="w-12 rounded border border-solid border-gray-500 text-right"
           onChange={(e) => setDisplayWordsNum(parseInt(e.target.value))}
         />
-        <label>Pad words</label>
+        <label htmlFor={padWordsId}>Pad words</label>
         <input
           type="number"
           value={padWordsNum}
           min={0}
           max={5}
-          className="w-12 rounded border-[1px] border-solid border-gray-500 text-right"
+          id={padWordsId}
+          className="w-12 rounded border border-solid border-gray-500 text-right"
           onChange={(e) => setPadWordsNum(parseInt(e.target.value))}
         />
       </div>
