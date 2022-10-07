@@ -1,6 +1,25 @@
 import type { NextPage } from "next";
 import { useId, useState } from "react";
 
+type NonFunctionPropertyNames<T> = {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  [K in keyof T]: T[K] extends Function ? never : K;
+}[keyof T];
+type NonFunctionProperties<T> = Pick<T, NonFunctionPropertyNames<T>>;
+
+const speakWords = (
+  wordsToSpeak: string,
+  speechSynthesisSettings: Partial<
+    NonFunctionProperties<SpeechSynthesisUtterance>
+  >
+) => {
+  const utterance = new SpeechSynthesisUtterance();
+  utterance.text = wordsToSpeak;
+  Object.assign(utterance, speechSynthesisSettings);
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+};
+
 const Home: NextPage = () => {
   const [text, setText] = useState("");
   const [displayWordsNum, setDisplayWordsNum] = useState(2);
@@ -8,6 +27,9 @@ const Home: NextPage = () => {
   const [position, setPosition] = useState(0);
   const displayWordsId = useId();
   const padWordsId = useId();
+  const [speechSynthesisSettings, setSpeechSynthesisSettings] = useState<
+    Partial<NonFunctionProperties<SpeechSynthesisUtterance>>
+  >({});
 
   const words = text.split(/\s+/).filter((word) => word.length > 0);
 
@@ -20,6 +42,16 @@ const Home: NextPage = () => {
   const secondPaddedWords = words
     .slice(position + displayWordsNum, position + displayWordsNum + padWordsNum)
     .join(" ");
+
+  const nextPosition = () =>
+    setPosition((p) => {
+      const next = Math.min(p + displayWordsNum, words.length - 1);
+      if (next < p + displayWordsNum) return p;
+      return next;
+    });
+
+  const previousPosition = () =>
+    setPosition((p) => Math.max(0, p - displayWordsNum));
 
   return (
     <>
@@ -46,22 +78,22 @@ const Home: NextPage = () => {
         )}
       </p>
       <button
-        onClick={() =>
-          setPosition((p) => {
-            const next = Math.min(p + displayWordsNum, words.length - 1);
-            if (next < p + displayWordsNum) return p;
-            return next;
-          })
-        }
+        onClick={previousPosition}
+        className="rounded bg-red-500 py-2 px-4 font-bold text-white hover:bg-red-700"
+      >
+        Decrease position ({position})
+      </button>
+      <button
+        onClick={nextPosition}
         className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
       >
         Increase position ({position})
       </button>
       <button
-        onClick={() => setPosition((p) => Math.max(0, p - displayWordsNum))}
-        className="rounded bg-red-500 py-2 px-4 font-bold text-white hover:bg-red-700"
+        className="rounded bg-pink-500 py-2 px-4 font-bold text-white hover:bg-pink-700"
+        onClick={() => speakWords(displayedWords, speechSynthesisSettings)}
       >
-        Decrease position ({position})
+        Speak
       </button>
       <div>
         <label htmlFor={displayWordsId}>Display words</label>
