@@ -53,6 +53,8 @@ const Home: NextPage = () => {
   const previousPosition = () =>
     setPosition((p) => Math.max(0, p - displayWordsNum));
 
+  const resetPosition = () => setPosition(0);
+
   return (
     <>
       <h1 className="text-center text-5xl">Tedious Handwriting</h1>
@@ -94,6 +96,12 @@ const Home: NextPage = () => {
         onClick={() => speakWords(displayedWords, speechSynthesisSettings)}
       >
         Speak
+      </button>
+      <button
+        className=" rounded bg-purple-500 py-2 px-4 font-bold text-white hover:bg-purple-700"
+        onClick={resetPosition}
+      >
+        Reset position
       </button>
       <div>
         <label htmlFor={displayWordsId}>Display words</label>
