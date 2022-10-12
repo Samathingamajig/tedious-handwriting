@@ -20,6 +20,9 @@ const speakWords = (
   window.speechSynthesis.speak(utterance);
 };
 
+const clamp = (num: number, min: number, max: number) =>
+  Math.min(Math.max(num, min), max);
+
 const Home: NextPage = () => {
   const [text, setText] = useState("");
   const [displayWordsNum, setDisplayWordsNum] = useState(2);
@@ -112,7 +115,9 @@ const Home: NextPage = () => {
           max={5}
           id={displayWordsId}
           className="w-12 rounded border border-solid border-gray-500 text-right"
-          onChange={(e) => setDisplayWordsNum(parseInt(e.target.value))}
+          onChange={(e) =>
+            setDisplayWordsNum(clamp(parseInt(e.target.value), 1, 5))
+          }
         />
         <label htmlFor={padWordsId}>Pad words</label>
         <input
@@ -122,7 +127,9 @@ const Home: NextPage = () => {
           max={5}
           id={padWordsId}
           className="w-12 rounded border border-solid border-gray-500 text-right"
-          onChange={(e) => setPadWordsNum(parseInt(e.target.value))}
+          onChange={(e) =>
+            setPadWordsNum(clamp(parseInt(e.target.value), 0, 5))
+          }
         />
       </div>
     </>
